@@ -43,16 +43,12 @@
             <br>
             <div class="botones">
                 <div style='text-align:center'>
-                    <right>
                         <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
                         <button type="button" class="btn btn-warning"  v-on:click="findCliente">Buscar</button>
                         <button type="button" class="btn btn-warning" v-on:click="makeCliente">Crear</button>
                         <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteCliente">Eliminar</button><br /><br />
-                        
-
-                    </right>
                 </div>
             </div>
         
@@ -178,9 +174,9 @@ export default {
             this.cliente = {
                             "telefono": this.telefono
                             } 
-            let telefono = this.cliente
+            let tel_delete = this.cliente
             let self = this
-            axios.delete("https://restaurante-back-g1.herokuapp.com/cliente/delete/", {data: telefono})
+            axios.delete("https://restaurante-back-g1.herokuapp.com/cliente/delete/", {data: tel_delete})
                 .then((result) => {
                     
                     confirm("Se elimino de manera satisfactoria");

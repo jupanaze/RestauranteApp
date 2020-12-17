@@ -1,58 +1,51 @@
 <template>
     <div id="Inventario">
         <br />
-        <h2 >MÓDULO DE INVENTARIO</h2>
+        <h2 style='text-align:center'>MÓDULO DE INVENTARIOS</h2>
         <br />
-        
         <form>
             <div class = "formulario" >
 
                 <div class="form-row" >
-                    <div class="form-group col-md-5">
-                        <label for="idprod">Id:</label>
-                        <input type="text" class="form-control" id="idprod" name="idprod" value=""  placeholder="Id"/>
+                    <div class="form-group col-md-3">                        
+                        <label for="idprod">Id producto:</label>
+                        <input type="text" class="form-control" id="idprod" name="idprod" value="" placeholder="Id producto"/>
                     </div>
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-3">
+                        <label for="catprod">Categoría:</label>
+                        <input type="text" class="form-control" id="catprod" name="catprod" value="" placeholder="Carnes, Pollo, Arroces "/>
+                    </div>
+                    <div class="form-group col-md-4">
                         <label for="nomprod">Nombre:</label>
                         <input type="text" class="form-control" id="nomprod" name="nomprod" value="" placeholder="Nombre"/>
                     </div>
+                    
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-5">
                         <label for="precprod">Precio:</label>
-                        <input type="number" class="form-control" id="precprod" name="precprod" value="" placeholder="Precio"/>  
+                        <input type="text" class="form-control" id="precprod" name="precprod" value="" placeholder="$8000"/>  
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-5">
                         <label for="cantprod">Cantidad:</label>
-                        <input type="number" class="form-control" id="cantprod" name="cantprod" value="" placeholder="Cantidad"/>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label for="catprod">Categoría:</label>
-                        <input type="text" class="form-control" id="catprod" name="catprod" value="" placeholder="Categoría"/>
+                        <input type="text" class="form-control" id="cantprod" name="cantprod" value="" placeholder="20"/>
                     </div>
                 </div>
             </div>
             <br>
             <div class="botones">
                 <div style='text-align:center'>
-                    <right>
-                        <button type="button" class="btn btn-warning" v-on:click="myProvider">Lista</button>
-                        <button type="button" class="btn btn-warning"  v-on:click="findProducto">Buscar</button>
-                        <button type="button" class="btn btn-warning" v-on:click="createProducto">Crear</button>
+                        <button type="button" class="btn btn-warning" >lista de productos</button>
+                        <button type="button" class="btn btn-warning" v-on:click="findProducto">Buscar</button>
+                        <button type="button" class="btn btn-warning"  v-on:click="createProducto">Crear</button>
                         <!-- <button type="button" class="btn btn-warning" >Actualizar</button> -->
                         <button type="button" class="btn btn-warning" v-on:click="cleanCampos">Limpiar</button>
                         <button type="button" class="btn btn-warning" v-on:click="deleteProducto">Eliminar</button><br /><br />
-                        
-
-                    </right>
                 </div>
             </div>
         
         </form>
-        <br />
-        
-        <b-table sticky-header ref="table" id="my-table" striped hover :items="items"></b-table>
-        
+
     </div>
 </template>
 
@@ -61,7 +54,6 @@
 import axios from "axios";
 export default {
     name: "Inventario",
-
     data: function () {
         return {
             id: "",
@@ -69,18 +61,25 @@ export default {
             precio: 0,
             cantidad: 0,
             categoria: "",
-            newProducto: {},
-            items: []
         };
     },
 
 
     methods: {
         init: function () {
-        if (this.$route.name != "inventario") {
+        if (this.$route.name != "user") {
             let username = input.idprod.getItem("current_username");
-            this.$router.push({name: "inventario", params: { username: 'username' }});
+            this.$router.push({ name: "user", params: { username: username }});
         }
+        },
+        cleanCampos: function () {
+            
+            document.getElementById("idprod").value = ""
+            document.getElementById("nomprod").value = ""
+            document.getElementById("precprod").value = ""
+            document.getElementById("cantprod").value = ""
+            document.getElementById("catprod").value = ""
+                                
         },
 
         findProducto: function () {
@@ -104,81 +103,50 @@ export default {
                     alert("ERROR Servidor");
                 });
         },
-
         createProducto: function () {
             this.id = document.getElementById("idprod").value
             this.nombre = document.getElementById("nomprod").value
             this.precio = document.getElementById("precprod").value
             this.cantidad = document.getElementById("cantprod").value
             this.categoria = document.getElementById("catprod").value
-
-            this.newProducto = {
+    
+            let self = this
+            
+            axios.post("https://restaurante-back-g1.herokuapp.com/producto/crear/", {
                             "id": this.id,
                             "nombre": this.nombre,
                             "precio": parseInt(this.precio),
                             "cantidad": parseInt(this.cantidad),
-                            "categoria": this.categoria,
-            }   
-            let self = this          
-            axios.post("https://restaurante-back-g1.herokuapp.com/producto/crear/", this.newProducto)
+                            "categoria": this.categoria
+            })
                 .then((result) => {
-                    window.confirm("Producto Creado");
+                    alert("Producto Creado");
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
-            this.myProvider()
-            this.$refs.table.refresh()
-        },
 
-        myProvider: function () {
-            console.log("Entro");
-            let self = this
-            
-            axios.get("https://restaurante-back-g1.herokuapp.com/producto/lista/")
-            .then((result) => {
-                self.items = result.data
-            }).catch(error => {
-                
-                alert("ERROR Servidor");
-                return []
-            })
         },
-
         deleteProducto: function () {
             this.id = document.getElementById("idprod").value
-            this.producto = {
-                            "id": this.id,
-                            "nombre": this.nombre,
-                            "precio": this.precio,
-                            "cantidad": this.cantidad,
-                            "categoria": this.categoria
-                            } 
-            let id = this.producto
             let self = this
-            axios.delete("https://restaurante-back-g1.herokuapp.com/producto/delete/", {data: id})
+            axios.get("https://restaurante-back-g1.herokuapp.com/producto/delete/" + this.id)
                 .then((result) => {
+                    self.id = ""
+                    self.nombre = ""
+                    self.precio = 0
+                    self.cantidad = 0
+                    self.categoria = ""
                     
-                    confirm("El producto se eliminó exitosamente");
-                    
-                    
+                    document.getElementById("idprod").value = self.id;
+                    document.getElementById("nomprod").value = self.nombre;
+                    document.getElementById("precprod").value = self.precio;
+                    document.getElementById("cantprod").value = self.cantidad;
+                    document.getElementById("catprod").value = self.categoria;                 
                 })
                 .catch((error) => {
                     alert("ERROR Servidor");
                 });
-            this.myProvider()
-            this.$refs.table.refresh()
-
-        },
-
-        cleanCampos: function () {
-            
-            document.getElementById("idprod").value = ""
-            document.getElementById("nomprod").value = ""
-            document.getElementById("precprod").value = ""
-            document.getElementById("cantprod").value = ""
-            document.getElementById("catprod").value = ""
-                                
         },
     },
 }
@@ -231,6 +199,5 @@ export default {
     margin-bottom: 0rem;
     text-align: center;
     margin: 5%;
-}
-
+} 
 </style>
