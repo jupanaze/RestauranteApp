@@ -1,2 +1,1 @@
-# RestauranteApp
-Proyecto MisionTIC
+# cajero-app
